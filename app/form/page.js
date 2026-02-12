@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 export default function Home() {
   const router = useRouter();
 
@@ -45,7 +46,10 @@ export default function Home() {
   };
 
   return (
+    <div>
+       <Navbar />
     <div className="min-h-screen flex items-center justify-center from-blue-50 via-white to-blue-100 px-6">
+       
       <div className="max-w-[1100px] w-full bg-white rounded-3xl shadow-xl flex overflow-hidden border border-blue-100">
 
         <div className="hidden md:flex w-1/2 items-center justify-center">
@@ -140,6 +144,8 @@ export default function Home() {
           </button>
         </form>
       </div>
+    </div>
+    <Footer />
     </div>
   );
 }

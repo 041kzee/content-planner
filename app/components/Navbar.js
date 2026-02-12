@@ -3,20 +3,21 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { useState } from "react";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: "Auth", path: "/auth" },
-    { name: "Create Profile", path: "/create-profile" },
+    { name: "Login", path: "/login" },
+    { name: "SignUp", path: "/signup" },
     { name: "Planner", path: "/planner" },
     { name: "Analytics", path: "/analytics" },
   ];
 
   return (
-    <nav className="w-full bg-white border-b border-gray-200 px-8 py-3 flex items-center justify-between">
-      
+    <nav className="w-full bg-white border-b border-gray-200 px-4 sm:px-6 md:px-8 py-3 flex items-center justify-between relative">
       
       <div className="flex items-center gap-2">
         <Image
@@ -24,16 +25,15 @@ export default function Navbar() {
           alt="logo"
           width={40}
           height={40}
-          className="rounded-full"
+          className="rounded-full w-8 h-8 sm:w-10 sm:h-10"
         />
-        <p className="text-lg font-semibold tracking-wide">
+        <p className="text-base sm:text-lg font-semibold tracking-wide">
           <span className="text-[#91c7da]">Influencer</span>{" "}
           <span className="text-[#124253]">Hub</span>
         </p>
       </div>
 
-      
-      <div className="flex items-center gap-10 relative">
+      <div className="hidden md:flex items-center gap-6 lg:gap-10 relative">
         {navLinks.map((link) => {
           const isActive = pathname === link.path;
 
@@ -57,9 +57,8 @@ export default function Navbar() {
         })}
       </div>
 
-   
-      <div className="flex items-center gap-3">
-        <div className="h-8 w-8 rounded-full overflow-hidden">
+      <div className="hidden md:flex items-center gap-2 sm:gap-3">
+        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full overflow-hidden">
           <Image
             src="/profile.png"
             alt="profile"
@@ -67,10 +66,59 @@ export default function Navbar() {
             height={32}
           />
         </div>
-        <span className="text-sm font-semibold text-[#124253]">
+        <span className="text-xs sm:text-sm font-semibold text-[#124253]">
           Name
         </span>
       </div>
+
+      <button
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        className="md:hidden flex flex-col gap-1.5 p-2"
+        aria-label="Toggle menu"
+      >
+        <span className={`w-6 h-0.5 bg-[#124253] transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+        <span className={`w-6 h-0.5 bg-[#124253] transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
+        <span className={`w-6 h-0.5 bg-[#124253] transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+      </button>
+
+      {isMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-200 shadow-lg z-50">
+          <div className="flex flex-col py-4">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.path;
+
+              return (
+                <Link
+                  key={link.name}
+                  href={link.path}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`px-6 py-3 text-sm font-medium transition-colors duration-200 ${
+                    isActive
+                      ? "text-[#124253] bg-gray-50 border-l-4 border-[#91c7da]"
+                      : "text-gray-500 hover:text-[#124253] hover:bg-gray-50"
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
+            
+            <div className="flex items-center gap-3 px-6 py-3 mt-2 border-t border-gray-200">
+              <div className="h-8 w-8 rounded-full overflow-hidden">
+                <Image
+                  src="/profile.png"
+                  alt="profile"
+                  width={32}
+                  height={32}
+                />
+              </div>
+              <span className="text-sm font-semibold text-[#124253]">
+                Name
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

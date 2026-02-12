@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useRouter } from "next/navigation";
+import Navbar from "../components/Navbar";  
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -24,6 +25,8 @@ export default function SignupPage() {
   };
 
   return (
+    <div>
+        <Navbar />
     <div className="min-h-screen flex items-center justify-center from-blue-50 via-white to-blue-100 px-6">
       <div className="max-w-[1100px] w-full bg-white rounded-3xl shadow-xl flex overflow-hidden border border-blue-100">
 
@@ -92,6 +95,7 @@ export default function SignupPage() {
           </p>
         </form>
       </div>
+    </div>
     </div>
   );
 }

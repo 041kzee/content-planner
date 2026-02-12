@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useRouter } from "next/navigation";
+import Navbar from "../components/Navbar";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -24,6 +25,8 @@ export default function LoginPage() {
   };
 
   return (
+    <div>
+        <Navbar />
     <div className="min-h-screen flex items-center justify-center from-blue-50 via-white to-blue-100 px-6">
       <div className="max-w-[1100px] w-full bg-white rounded-3xl shadow-xl flex overflow-hidden border border-blue-100">
 
@@ -80,6 +83,8 @@ export default function LoginPage() {
           <button
             type="submit"
             className="bg-[#91c7da] text-white py-3 rounded-full font-medium shadow-md hover:bg-[#548293] transition-all duration-300 w-full"
+          
+
           >
             Sign In
           </button>
@@ -92,6 +97,7 @@ export default function LoginPage() {
           </p>
         </form>
       </div>
+    </div>
     </div>
   );
 }
