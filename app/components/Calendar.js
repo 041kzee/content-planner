@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { db } from "../lib/firebase";
-import { updateDoc, doc, getDocs, collection } from "firebase/firestore";
+import { updateDoc, doc, getDocs, collection, onSnapshot } from "firebase/firestore";
 import { Outfit } from "next/font/google";
 const outfit = Outfit({
     subsets: ["latin"],
@@ -31,8 +31,6 @@ export default function SimpleCalendar() {
                 days: updatedDays,
             });
 
-            fetchPlans();
-
             setSelectedContent({
                 ...selectedContent,
                 status: newStatus,
@@ -43,24 +41,23 @@ export default function SimpleCalendar() {
         }
     }
 
-    async function fetchPlans() {
-        const querySnapshot = await getDocs(collection(db, "plans"));
+    useEffect(() => {
+        const unsubscribe = onSnapshot(collection(db, "plans"), (snapshot) => {
+            const plansArray = [];
 
-        const plansArray = [];
-
-        querySnapshot.forEach((doc) => {
-            plansArray.push({
-                id: doc.id,
-                ...doc.data()
+            snapshot.forEach((doc) => {
+                plansArray.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
             });
+
+            setPlans(plansArray);
         });
 
-        setPlans(plansArray);
-    }
-
-    useEffect(() => {
-        fetchPlans();
+        return () => unsubscribe();
     }, []);
+
 
     function getPlanDayIndex(date) {
         if (plans.length === 0) return null;

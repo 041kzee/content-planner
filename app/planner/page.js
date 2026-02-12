@@ -6,7 +6,7 @@ import { db } from "../lib/firebase";
 import Navbar from "../components/Navbar";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { toast, Toaster } from "sonner"
-
+import { useProfileStore } from "../store/profileStore";
 
 const outfit = Outfit({
     subsets: ["latin"],
@@ -28,6 +28,7 @@ function getDaysInMonth() {
 const totalDays = getDaysInMonth();
 
 export default function PlannerPage() {
+    const profile = useProfileStore((state) => state.profile);
     const [selectedDay, setSelectedDay] = useState(null);
     const [noOfDays, setNoOfDays] = useState(1);
     const [userPrompt, setUserPrompt] = useState("");
@@ -43,7 +44,7 @@ export default function PlannerPage() {
                 },
                 body: JSON.stringify({
                     numberOfDays: noOfDays,
-                    influencerType: "fitness influencer",
+                    influencerType: profile?.type || "general",
                     userPrompt: userPrompt,
                 }),
             });
@@ -56,8 +57,9 @@ export default function PlannerPage() {
                 status: "not_completed"
             }));
             console.log(daysWithStatus)
+            console.log(profile?.type)
             await addDoc(collection(db, "plans"), {
-                influencerType: "fitness influencer",
+                influencerType: profile?.type || "general",
                 userPrompt: userPrompt,
                 numberOfDays: noOfDays,
                 createdAt: serverTimestamp(),
@@ -68,7 +70,7 @@ export default function PlannerPage() {
             console.log("Plan stored successfully");
             toast.success("Plan created successfully!");
         } catch (error) {
-            Touch.error("Failed to create plan. Please try again.");
+            toast.error("Failed to create plan. Please try again.");
             console.log("Error:", error)
         }
     }

@@ -14,13 +14,16 @@ export async function POST(req) {
       name: body.name,
       bio: body.bio,
       type: body.type,
-      followers: Number(body.followers), 
-      createdAt: serverTimestamp(), 
+      followers: Number(body.followers),
+      createdAt: serverTimestamp(),
     };
 
-    await addDoc(collection(db, "profiles"), profile);
+    const docRef = await addDoc(collection(db, "profiles"), profile);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      id: docRef.id
+    });
 
   } catch (err) {
     console.error("Firestore error:", err);
