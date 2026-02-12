@@ -14,8 +14,8 @@ export async function POST(req) {
       name: body.name,
       bio: body.bio,
       type: body.type,
-      followers: Number(body.followers), // force number
-      createdAt: serverTimestamp(), // safer
+      followers: Number(body.followers), 
+      createdAt: serverTimestamp(), 
     };
 
     await addDoc(collection(db, "profiles"), profile);
