@@ -7,6 +7,7 @@ import Navbar from "../components/Navbar";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { toast, Toaster } from "sonner"
 import { useProfileStore } from "../store/profileStore";
+import Footer from "../components/Footer";
 
 const outfit = Outfit({
     subsets: ["latin"],
@@ -32,7 +33,7 @@ export default function PlannerPage() {
     const [selectedDay, setSelectedDay] = useState(null);
     const [noOfDays, setNoOfDays] = useState(1);
     const [userPrompt, setUserPrompt] = useState("");
-    
+
     async function generatePlan() {
         try {
             toast.success("Creating plan...");
@@ -90,11 +91,11 @@ export default function PlannerPage() {
                         create a custom plan just for you!
                     </p>
                 </div>
-                <div className="flex flex-row w-full">
-                    <img src="S(1).png" className="w-180 -mt-30"></img>
-                    <div className="self-center min-w-0 flex-1">
+                <div className="flex lg:flex-row flex-col w-full lg:pt-20">
+                    <img src="S(1).png" className="w-150 lg:-mt-30 mx-auto"></img>
+                    <div className="self-center min-w-0 flex-1 max-w-[95%] md:max-w-[80%]">
                         <p className="text-gray-700 text-2xl">Days of Content</p>
-                        <div className="border px-2 my-4 border-gray-400 overflow-x-scroll max-w-full flex flex-row rounded-lg">
+                        <div className="border px-2 my-4 border-gray-400 overflow-x-auto min-w-0 max-w-full flex flex-row rounded-lg">
                             {
                                 Array.from({ length: totalDays }, (_, i) => (
                                     <div
@@ -129,6 +130,8 @@ export default function PlannerPage() {
                 </div>
                 <SimpleCalendar />
             </div>
+            <Footer />
+
         </div>
     )
 }

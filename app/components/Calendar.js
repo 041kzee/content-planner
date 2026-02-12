@@ -124,7 +124,7 @@ export default function SimpleCalendar() {
     const emptySlots = Array.from({ length: firstDayIndex });
 
     return (
-        <div className="flex lg:flex-row flex-col gap-20">
+        <div className="flex lg:flex-row flex-col gap-20 py-20">
             <div className={`${outfit.className} rounded-xl shadow-2xl w-full`}>
                 <div className="bg-gray-200 p-4 rounded-t-xl">
                     <select
