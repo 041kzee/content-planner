@@ -18,7 +18,7 @@ export default function SignupPage() {
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      router.push("/home");
+      router.push("/form");
     } catch (err) {
       setError(err.message || "Failed to sign up");
     }
@@ -30,7 +30,7 @@ export default function SignupPage() {
     <div className="min-h-screen flex items-center justify-center from-blue-50 via-white to-blue-100 px-6">
       <div className="max-w-[1100px] w-full bg-white rounded-3xl shadow-xl flex overflow-hidden border border-blue-100">
 
-        {/* LEFT SIDE — IMAGE (Same as Login) */}
+       
         <div className="hidden md:flex w-1/2 items-center justify-center">
           <img
             src="/auth.png"
@@ -39,7 +39,7 @@ export default function SignupPage() {
           />
         </div>
 
-        {/* RIGHT SIDE — FORM */}
+        
         <form
           onSubmit={handleSignup}
           className="w-full md:w-1/2 flex flex-col justify-center px-8 md:px-12 py-12"

@@ -18,7 +18,7 @@ export default function LoginPage() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push("/home");
+      router.push("/form");
     } catch (err) {
       setError(err.message || "Failed to sign in");
     }
@@ -39,7 +39,7 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* RIGHT SIDE — FORM */}
+        
         <form
           onSubmit={handleLogin}
           className="w-full md:w-1/2 flex flex-col justify-center px-8 md:px-12 py-12"

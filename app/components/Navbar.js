@@ -3,22 +3,46 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { db, auth } from "../lib/firebase";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [userName, setUserName] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: "Login", path: "/login" },
-    { name: "SignUp", path: "/signup" },
+    { name: "Auth", path: "/login" },
+    { name: "CreateProfile", path: "/form" },
     { name: "Planner", path: "/planner" },
     { name: "Analytics", path: "/analytics" },
   ];
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        const docRef = doc(db, "profiles", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setUserName(docSnap.data().name);
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
   return (
-    <nav className="w-full bg-white border-b border-gray-200 px-4 sm:px-6 md:px-8 py-3 flex items-center justify-between relative">
-      
+    <nav className="w-full bg-white border-b border-gray-200 px-8 py-3 flex items-center justify-between relative">
+
+      {/* Logo */}
       <div className="flex items-center gap-2">
         <Image
           src="/mainlogo.png"
@@ -33,7 +57,8 @@ export default function Navbar() {
         </p>
       </div>
 
-      <div className="hidden md:flex items-center gap-6 lg:gap-10 relative">
+      {/* Desktop Links */}
+      <div className="hidden md:flex items-center gap-10">
         {navLinks.map((link) => {
           const isActive = pathname === link.path;
 
@@ -41,14 +66,13 @@ export default function Navbar() {
             <Link
               key={link.name}
               href={link.path}
-              className={`relative text-sm font-medium transition-colors duration-200 ${
+              className={`relative text-[16px] font-medium transition-colors duration-200 ${
                 isActive
                   ? "text-[#124253]"
                   : "text-gray-500 hover:text-[#124253]"
               }`}
             >
               {link.name}
-
               {isActive && (
                 <span className="absolute -bottom-3 left-0 w-full h-[3px] bg-[#91c7da] rounded-full"></span>
               )}
@@ -57,8 +81,9 @@ export default function Navbar() {
         })}
       </div>
 
-      <div className="hidden md:flex items-center gap-2 sm:gap-3">
-        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full overflow-hidden">
+     
+      <div className="hidden md:flex items-center gap-3">
+        <div className="h-8 w-8 rounded-full overflow-hidden">
           <Image
             src="/profile.png"
             alt="profile"
@@ -66,11 +91,12 @@ export default function Navbar() {
             height={32}
           />
         </div>
-        <span className="text-xs sm:text-sm font-semibold text-[#124253]">
-          Name
+        <span className="text-sm font-semibold text-[#124253]">
+          {userName || "Loading..."}
         </span>
       </div>
 
+    
       <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="md:hidden flex flex-col gap-1.5 p-2"
@@ -81,6 +107,7 @@ export default function Navbar() {
         <span className={`w-6 h-0.5 bg-[#124253] transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
       </button>
 
+     
       {isMenuOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-200 shadow-lg z-50">
           <div className="flex flex-col py-4">
@@ -102,7 +129,7 @@ export default function Navbar() {
                 </Link>
               );
             })}
-            
+
             <div className="flex items-center gap-3 px-6 py-3 mt-2 border-t border-gray-200">
               <div className="h-8 w-8 rounded-full overflow-hidden">
                 <Image
@@ -113,7 +140,7 @@ export default function Navbar() {
                 />
               </div>
               <span className="text-sm font-semibold text-[#124253]">
-                Name
+                {userName || "Loading..."}
               </span>
             </div>
           </div>

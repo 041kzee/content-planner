@@ -18,7 +18,7 @@ export async function POST(req) {
       createdAt: serverTimestamp(), 
     };
 
-    await addDoc(collection(db, "profiles"), profile);
+    await addDoc(collection(db, "profiles" ), profile);
 
     return NextResponse.json({ success: true });
 
