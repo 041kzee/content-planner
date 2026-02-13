@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc , onSnapshot } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "../lib/firebase";
 
 export default function Navbar() {
@@ -19,30 +20,32 @@ export default function Navbar() {
     { name: "Analytics", path: "/analytics" },
   ];
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
+ useEffect(() => {
+  const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      setUserName("");
+      return;
+    }
 
-      try {
-        const docRef = doc(db, "profiles", user.uid);
-        const docSnap = await getDoc(docRef);
-
+    const unsubscribeProfile = onSnapshot(
+      doc(db, "profiles", user.uid),
+      (docSnap) => {
         if (docSnap.exists()) {
           setUserName(docSnap.data().name);
         }
-      } catch (error) {
-        console.error("Error fetching profile:", error);
       }
-    };
+    );
 
-    fetchProfile();
-  }, []);
+    return () => unsubscribeProfile();
+  });
+
+  return () => unsubscribeAuth();
+}, []);
 
   return (
-    <nav className="w-full bg-white border-b border-gray-200 px-8 py-3 flex items-center justify-between relative">
+    <nav className="w-full bg-white border-b border-gray-200 px-8 py-3 flex items-center justify-between relative ">
 
-      {/* Logo */}
+   
       <div className="flex items-center gap-2">
         <Image
           src="/mainlogo.png"
@@ -57,7 +60,6 @@ export default function Navbar() {
         </p>
       </div>
 
-      {/* Desktop Links */}
       <div className="hidden md:flex items-center gap-10">
         {navLinks.map((link) => {
           const isActive = pathname === link.path;

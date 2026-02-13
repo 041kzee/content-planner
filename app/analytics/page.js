@@ -1,28 +1,23 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import Image from "next/image";
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import PieChartComponent from "../components/PieChartComponent";
-
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../lib/firebase";
-import { auth } from "../lib/firebase";
+import { db, auth } from "../lib/firebase";
 
-export default function Page() {
+export default function AnalyticsPage() {
   return (
     <div>
       <Navbar />
-      <Body />
+      <AnalyticsBody />
     </div>
   );
 }
 
-function Body() {
+function AnalyticsBody() {
   const [daysData, setDaysData] = useState([]);
-  const [data, setData] = useState([
+  const [pieData, setPieData] = useState([
     { name: "Reels", value: 0 },
     { name: "Posts", value: 0 },
   ]);
@@ -36,19 +31,19 @@ function Body() {
 
       querySnapshot.forEach((doc) => {
         const docData = doc.data();
-
         if (docData.userId === user.uid) {
-          setDaysData(docData.days || []);
+          const days = docData.days || [];
+          setDaysData(days);
 
+          
           let reels = 0;
           let posts = 0;
-
-          docData.days?.forEach((day) => {
-            if (day.type === "Reel") reels++;
-            if (day.type === "Post") posts++;
+          days.forEach((day) => {
+            if (day.type.toLowerCase() === "reel") reels++;
+            if (day.type.toLowerCase() === "post") posts++;
           });
 
-          setData([
+          setPieData([
             { name: "Reels", value: reels },
             { name: "Posts", value: posts },
           ]);
@@ -60,27 +55,30 @@ function Body() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 px-10 py-10">
+    <div className="min-h-screen bg-slate-50 px-4 sm:px-10 py-10">
       <h1 className="text-4xl text-[#124253] font-bold text-center">
         Analytics
       </h1>
-
       <p className="text-center text-gray-400 text-lg mt-4">
         Track your content performance and consistency
       </p>
 
-      <div className="flex justify-center mt-6 gap-20">
-        <img src="analytics.png" className="h-160 w-100 -ml-50 -mt-20" />
+      <div className="flex flex-col lg:flex-row justify-center mt-6 gap-10 lg:gap-20 items-center">
+        <img
+          src="/analytics.png"
+          alt="Analytics Graphic"
+          className="w-full max-w-md lg:max-w-[400px] -mt-10 lg:-mt-20 "
+        />
 
-        <div className="mt-10 flex justify-center ml-20 w-[600px]">
+        <div className="mt-6 lg:mt-10 w-full lg:w-[600px]">
           <Calendar daysData={daysData} />
         </div>
 
-        <div className="p-11 ml-6 items-center justify-center mt-18 border rounded-2xl shadow-md border-slate-200 w-[400px] bg-white">
-          <h2 className="text-2xl font-bold mb-4 text-[#124253]">
+        <div className="p-6 lg:p-11 w-full lg:w-[400px] mt-6 lg:mt-18 items-center justify-center border rounded-2xl shadow-md border-slate-200 bg-white">
+          <h2 className="text-2xl font-bold mb-4 text-[#124253] text-center lg:text-left">
             Content Distribution
           </h2>
-          <PieChartComponent data={data} />
+          <PieChartComponent data={pieData} />
         </div>
       </div>
     </div>
@@ -97,7 +95,6 @@ function Calendar({ daysData }) {
     "January","February","March","April","May","June",
     "July","August","September","October","November","December"
   ];
-
   const daysOfWeek = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
   const firstDayOfMonth = new Date(year, month, 1).getDay();
@@ -105,82 +102,69 @@ function Calendar({ daysData }) {
 
   const generateCalendarDays = () => {
     const days = [];
-
-    for (let i = 0; i < firstDayOfMonth; i++) {
-      days.push(null);
-    }
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      days.push(day);
-    }
-
+    for (let i = 0; i < firstDayOfMonth; i++) days.push(null);
+    for (let day = 1; day <= daysInMonth; day++) days.push(day);
     return days;
   };
 
   const calendarDays = generateCalendarDays();
 
-  const goToPreviousMonth = () => {
-    setCurrentDate(new Date(year, month - 1, 1));
-  };
+  const goToPreviousMonth = () => setCurrentDate(new Date(year, month - 1, 1));
+  const goToNextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
 
-  const goToNextMonth = () => {
-    setCurrentDate(new Date(year, month + 1, 1));
-  };
-
-  const getScore = (dayNumber) => {
+  const getStatusColor = (dayNumber) => {
     const found = daysData.find(
-      (d) =>
-        d.day === dayNumber &&
-        new Date(d.date).getMonth() === month &&
-        new Date(d.date).getFullYear() === year
+      (d) => d.day === dayNumber &&
+             new Date(d.date).getMonth() === month &&
+             new Date(d.date).getFullYear() === year
     );
 
-    return found ? 10 : 0; 
+    if (!found) return "bg-gray-200 text-gray-500";
+    if (found.status === "completed") return "bg-green-500 text-white";
+    if (found.status === "not_completed") return "bg-red-500 text-white";
+    return "bg-gray-200 text-gray-500"; 
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-5 w-full max-w-3xl">
-      
-      <div className="flex items-center justify-between mb-6 border-b-2 border-slate-200 pb-4">
-        <h2 className="text-[19px] font-semibold text-[#124253]">
+    <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-4 sm:p-5 w-full">
+      <div className="flex flex-col sm:flex-row items-center sm:justify-between mb-4 sm:mb-6 border-b-2 border-slate-200 pb-4">
+        <h2 className="text-[19px] font-semibold text-[#124253] mb-2 sm:mb-0">
           Calendar Consistency
         </h2>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <button
             onClick={goToPreviousMonth}
-            className="px-3 py-1 rounded-md bg-[#91c7da] hover:bg-[#a8c9d5] text-white"
+            className="px-2 py-1 rounded-md bg-[#91c7da] hover:bg-[#a8c9d5] text-white"
           >
             ←
           </button>
-
-          <span className="font-medium text-slate-700">
+          <span className="font-medium text-slate-700 text-sm sm:text-base">
             {monthNames[month]} {year}
           </span>
-
           <button
             onClick={goToNextMonth}
-            className="px-3 py-1 rounded-md bg-[#91c7da] hover:bg-[#a8c9d5] text-white"
+            className="px-2 py-1 rounded-md bg-[#91c7da] hover:bg-[#a8c9d5] text-white"
           >
             →
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 mb-4 text-sm text-slate-500 font-medium border-b-2 border-slate-200 pb-2">
+      <div className="grid grid-cols-7 mb-4 text-xs sm:text-sm text-slate-500 font-medium border-b-2 border-slate-200 pb-2">
         {daysOfWeek.map((day) => (
-          <div key={day} className="text-center">
-            {day}
-          </div>
+          <div key={day} className="text-center">{day}</div>
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-4">
+      <div className="grid grid-cols-7 gap-1 sm:gap-2">
         {calendarDays.map((day, index) => (
-          <div key={index} className="flex justify-center items-center h-12">
+          <div key={index} className="flex justify-center items-center h-10 sm:h-12">
             {day && (
-              <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold bg-[#b8d6e1] text-[#124253] hover:scale-105 transition">
-                {getScore(day)}
+              <div
+                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold hover:scale-105 transition ${getStatusColor(day)}`}
+              >
+                {day}
               </div>
             )}
           </div>
