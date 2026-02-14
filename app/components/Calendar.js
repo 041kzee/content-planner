@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { db } from "../lib/firebase";
-import { updateDoc, doc, getDocs, collection, onSnapshot } from "firebase/firestore";
+import { updateDoc, doc, getDocs, collection, onSnapshot, query, orderBy, limit } from "firebase/firestore";
 import { Outfit } from "next/font/google";
 const outfit = Outfit({
     subsets: ["latin"],
@@ -17,7 +17,7 @@ export default function SimpleCalendar() {
     async function updateDayStatus(newStatus) {
         if (!selectedContent || plans.length === 0) return;
 
-        const latestPlan = plans[plans.length - 1];
+        const latestPlan = plans[0];
 
         try {
             const updatedDays = latestPlan.days.map((day) => {
@@ -42,7 +42,13 @@ export default function SimpleCalendar() {
     }
 
     useEffect(() => {
-        const unsubscribe = onSnapshot(collection(db, "plans"), (snapshot) => {
+        const q = query(
+            collection(db, "plans"),
+            orderBy("createdAt", "desc"),
+            limit(1)
+        );
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
             const plansArray = [];
 
             snapshot.forEach((doc) => {
@@ -59,10 +65,11 @@ export default function SimpleCalendar() {
     }, []);
 
 
+
     function getPlanDayIndex(date) {
         if (plans.length === 0) return null;
 
-        const latestPlan = plans[plans.length - 1];
+        const latestPlan = plans[0];
 
         let startDate;
 
@@ -152,7 +159,7 @@ export default function SimpleCalendar() {
                 <div className="flex flex-col m-6 bg-gray-200 rounded-xl">
                     <div className="flex text-lg text-gray-400">
                         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-                            <div key={day} className={`flex-1 border bg-white border-gray-100 p-3 text-center`}>
+                            <div key={day} className={`flex-1 w-[14.28%] border bg-white border-gray-100 p-3 text-center`}>
                                 {day}
                             </div>
                         ))}
@@ -175,11 +182,11 @@ export default function SimpleCalendar() {
                                 const dayData = latestPlan.days[planIndex];
 
                                 if (dayData.status === "completed") {
-                                    bgColor = "bg-[#22C55E]";
+                                    bgColor = "bg-[#22C55E] cursor-pointer";
                                 } else if (dayData.status === "skipped") {
-                                    bgColor = "bg-[#EF4444]";
+                                    bgColor = "bg-[#EF4444] cursor-pointer";
                                 } else {
-                                    bgColor = "bg-[#81c4ee]";
+                                    bgColor = "bg-[#81c4ee] cursor-pointer";
                                 }
                             }
                             return (

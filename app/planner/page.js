@@ -95,7 +95,7 @@ export default function PlannerPage() {
                     <img src="S(1).png" className="w-150 lg:-mt-30 mx-auto"></img>
                     <div className="self-center min-w-0 flex-1 max-w-[95%] md:max-w-[80%]">
                         <p className="text-gray-700 text-2xl">Days of Content</p>
-                        <div className="border px-2 my-4 border-gray-400 overflow-x-auto min-w-0 max-w-full flex flex-row rounded-lg">
+                        <div className="cursor-pointer border px-2 my-4 border-gray-400 overflow-x-auto min-w-0 max-w-full flex flex-row rounded-lg">
                             {
                                 Array.from({ length: totalDays }, (_, i) => (
                                     <div
