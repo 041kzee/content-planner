@@ -80,14 +80,14 @@ export default function PlannerPage() {
         <div>
             <Navbar />
             <Toaster />
-            <div className={`${outfit.className} px-15 bg-gray-100`}>
+            <div className={`${outfit.className} px-10 lg:px-15 bg-gray-100`}>
                 <div className="text-center pt-15">
-                    <h1 className="text-6xl text-gray-700 font-medium mb-5">
+                    <h1 className="text-4xl sm:text-6xl text-gray-700 font-medium mb-5">
                         Create Your Content Plan
                     </h1>
-                    <p className="text-xl font-thin text-gray-500">
+                    <p className="text-md sm:text-xl font-thin text-gray-500">
                         Choose how many days of content you need and we'll
-                        <br />
+                        <br className="sm:block hidden" /> {" "}
                         create a custom plan just for you!
                     </p>
                 </div>
@@ -123,7 +123,7 @@ export default function PlannerPage() {
                             onClick={() => {
                                 generatePlan()
                             }}
-                            className="cursor-pointer py-2 px-3 bg-[#81c4ee] text-white text-xl rounded-lg mt-4">
+                            className="cursor-pointer py-2 px-3 bg-[#81c4ee] text-white text-md lg:text-xl rounded-lg mt-4">
                             GENERATE CONTENT PLAN
                         </button>
                     </div>

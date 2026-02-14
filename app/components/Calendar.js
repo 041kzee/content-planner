@@ -135,7 +135,7 @@ export default function SimpleCalendar() {
             <div className={`${outfit.className} rounded-xl shadow-2xl w-full`}>
                 <div className="bg-gray-200 p-4 rounded-t-xl">
                     <select
-                        className="border p-2 bg-[#81c4ee] border-none text-gray-600 text-lg"
+                        className="border p-2 bg-[#81c4ee] border-none text-white text-lg"
                         value={`${selected.month}-${selected.year}`}
                         onChange={(e) => {
                             const [m, y] = e.target.value.split("-");
@@ -157,7 +157,7 @@ export default function SimpleCalendar() {
                 </div>
 
                 <div className="flex flex-col m-6 bg-gray-200 rounded-xl">
-                    <div className="flex text-lg text-gray-400">
+                    <div className="flex text-sm md:text-lg text-gray-400">
                         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                             <div key={day} className={`flex-1 w-[14.28%] border bg-white border-gray-100 p-3 text-center`}>
                                 {day}
