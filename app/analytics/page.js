@@ -5,12 +5,13 @@ import Navbar from "../components/Navbar";
 import PieChartComponent from "../components/PieChartComponent";
 import { collection, getDocs } from "firebase/firestore";
 import { db, auth } from "../lib/firebase";
-
+import Footer from "../components/Footer"
 export default function AnalyticsPage() {
   return (
     <div>
       <Navbar />
       <AnalyticsBody />
+       <Footer/>
     </div>
   );
 }
@@ -21,38 +22,40 @@ function AnalyticsBody() {
     { name: "Reels", value: 0 },
     { name: "Posts", value: 0 },
   ]);
+useEffect(() => {
+  const fetchData = async () => {
+    const querySnapshot = await getDocs(collection(db, "plans"));
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
+    let allDays = [];
+    let reels = 0;
+    let posts = 0;
 
-      const querySnapshot = await getDocs(collection(db, "plans"));
+    querySnapshot.forEach((doc) => {
+      const docData = doc.data();
+      const days = docData.days || [];
 
-      querySnapshot.forEach((doc) => {
-        const docData = doc.data();
-        if (docData.userId === user.uid) {
-          const days = docData.days || [];
-          setDaysData(days);
+      days.forEach((day) => {
+        allDays.push({
+          ...day,
+          startDate: docData.startDate?.toDate?.() || new Date(),
+        });
 
-          
-          let reels = 0;
-          let posts = 0;
-          days.forEach((day) => {
-            if (day.type.toLowerCase() === "reel") reels++;
-            if (day.type.toLowerCase() === "post") posts++;
-          });
-
-          setPieData([
-            { name: "Reels", value: reels },
-            { name: "Posts", value: posts },
-          ]);
-        }
+        if (day.type?.toLowerCase() === "reel") reels++;
+        if (day.type?.toLowerCase() === "post") posts++;
       });
-    };
+    });
 
-    fetchData();
-  }, []);
+    setDaysData(allDays);
+
+    setPieData([
+      { name: "Reels", value: reels },
+      { name: "Posts", value: posts },
+    ]);
+  };
+
+  fetchData();
+}, []);
+
 
   return (
     <div className="min-h-screen bg-slate-50 px-4 sm:px-10 py-10">
@@ -63,7 +66,7 @@ function AnalyticsBody() {
         Track your content performance and consistency
       </p>
 
-      <div className="flex flex-col lg:flex-row justify-center mt-6 gap-10 lg:gap-20 items-center">
+      <div className="flex flex-col lg:flex-row justify-center mt-6 -ml-20 gap-10 lg:gap-20 items-center">
         <img
           src="/analytics.png"
           alt="Analytics Graphic"
@@ -78,7 +81,7 @@ function AnalyticsBody() {
           <h2 className="text-2xl font-bold mb-4 text-[#124253] text-center lg:text-left">
             Content Distribution
           </h2>
-          <PieChartComponent data={pieData} />
+         <PieChartComponent data={pieData} />
         </div>
       </div>
     </div>
@@ -113,29 +116,44 @@ function Calendar({ daysData }) {
   const goToNextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
 
   const getStatusColor = (dayNumber) => {
-    const found = daysData.find(
-      (d) => d.day === dayNumber &&
-             new Date(d.date).getMonth() === month &&
-             new Date(d.date).getFullYear() === year
-    );
+  const found = daysData.find((d) => {
+    const startDate = new Date(d.startDate);
+    const actualDate = new Date(startDate);
+    actualDate.setDate(startDate.getDate() + (d.day - 1));
 
-    if (!found) return "bg-gray-200 text-gray-500";
-    if (found.status === "completed") return "bg-green-500 text-white";
-    if (found.status === "not_completed") return "bg-red-500 text-white";
-    return "bg-gray-200 text-gray-500"; 
-  };
+    return (
+      actualDate.getDate() === dayNumber &&
+      actualDate.getMonth() === month &&
+      actualDate.getFullYear() === year
+    );
+  });
+
+  if (!found) return "bg-gray-200 text-gray-500";
+
+  if (found.status === "completed")
+    return "bg-green-500 text-white";
+
+  if (found.status === "skipped")
+    return "bg-red-500 text-white";
+
+  if (found.status === "not_completed")
+    return "bg-blue-500 text-white";
+
+  return "bg-gray-200 text-gray-500";
+};
+
 
   return (
-    <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-4 sm:p-5 w-full">
+    <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-4 sm:p-13 w-full">
       <div className="flex flex-col sm:flex-row items-center sm:justify-between mb-4 sm:mb-6 border-b-2 border-slate-200 pb-4">
-        <h2 className="text-[19px] font-semibold text-[#124253] mb-2 sm:mb-0">
+        <h2 className="text-[20px] font-semibold text-[#124253] mb-2 sm:mb-0">
           Calendar Consistency
         </h2>
 
         <div className="flex items-center gap-2 sm:gap-4">
           <button
             onClick={goToPreviousMonth}
-            className="px-2 py-1 rounded-md bg-[#91c7da] hover:bg-[#a8c9d5] text-white"
+            className="px-4 py-1 rounded-md bg-[#91c7da] hover:bg-[#a8c9d5] text-white"
           >
             ←
           </button>
@@ -144,14 +162,14 @@ function Calendar({ daysData }) {
           </span>
           <button
             onClick={goToNextMonth}
-            className="px-2 py-1 rounded-md bg-[#91c7da] hover:bg-[#a8c9d5] text-white"
+            className="px-4 py-1 rounded-md bg-[#91c7da] hover:bg-[#a8c9d5] text-white"
           >
             →
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 mb-4 text-xs sm:text-sm text-slate-500 font-medium border-b-2 border-slate-200 pb-2">
+      <div className="grid grid-cols-7 mb-4 text-xs sm:text-[16px] text-slate-500 font-medium border-b-2 border-slate-200 pb-4">
         {daysOfWeek.map((day) => (
           <div key={day} className="text-center">{day}</div>
         ))}
@@ -162,7 +180,7 @@ function Calendar({ daysData }) {
           <div key={index} className="flex justify-center items-center h-10 sm:h-12">
             {day && (
               <div
-                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold hover:scale-105 transition ${getStatusColor(day)}`}
+                className={`w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold hover:scale-105 transition ${getStatusColor(day)}`}
               >
                 {day}
               </div>
@@ -170,6 +188,7 @@ function Calendar({ daysData }) {
           </div>
         ))}
       </div>
+     
     </div>
   );
 }
