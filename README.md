@@ -2,7 +2,7 @@
 ### AI-Powered Content Planning Platform for Social Media Creators
 
 Influencer Hub is a cloud-based SaaS web application designed to help influencers and content creators plan, generate, and manage their social media content efficiently.  
-The platform integrates Gemini AI for intelligent content generation, Firebase for backend services, Zustand for state management, and Vercel for scalable deployment.
+The platform integrates Gemini AI for intelligent content generation, Firebase for backend services, Zustand for global state management, and Vercel for scalable deployment.
 
 ---
 
@@ -28,15 +28,15 @@ The platform reduces manual effort and ensures consistent, structured content pl
 
 ## 🚀 Core Features
 
-- AI-based Content Idea Generation
-- Automated Caption & Hashtag Creation
-- 30-Day Structured Content Calendar
-- Cloud-based Storage (Firestore)
-- Google Authentication (Firebase Auth)
-- Global State Management (Zustand)
-- Modern Responsive UI (Tailwind CSS)
-- Secure Server-side AI API Routes
-- CI/CD Deployment via Vercel
+- AI-based Content Idea Generation  
+- Automated Caption & Hashtag Creation  
+- 30-Day Structured Content Calendar  
+- Cloud-based Storage (Firestore)  
+- Google Authentication (Firebase Auth)  
+- Global State Management (Zustand)  
+- Modern Responsive UI (Tailwind CSS)  
+- Secure Server-side AI API Routes  
+- CI/CD Deployment via Vercel  
 
 ---
 
@@ -73,15 +73,16 @@ User (Browser)
 
 ## 📂 Project Structure
 
+```
 app/
 ├── analytics/
 ├── api/
-│ ├── gemini/route.js
-│ └── profile/route.js
+│   ├── gemini/route.js
+│   └── profile/route.js
 ├── components/
-│ ├── gemini/
-│ ├── Navbar.js
-│ └── Footer.js
+│   ├── gemini/
+│   ├── Navbar.js
+│   └── Footer.js
 ├── planner/page.js
 ├── login/page.js
 ├── signup/page.js
@@ -90,8 +91,7 @@ app/
 ├── layout.js
 ├── page.js
 └── globals.css
-
-
+```
 
 The project follows a modular structure using the Next.js App Router for scalability and maintainability.
 
@@ -113,15 +113,24 @@ The project follows a modular structure using the Next.js App Router for scalabi
 
 ## ⚙️ Local Development Setup
 
-### 1. Clone Repository
+### 1️⃣ Clone Repository
 
 ```bash
 git clone https://github.com/your-username/influencer-hub.git
-cd content-planner
+cd influencer-hub
+```
 
+### 2️⃣ Install Dependencies
 
-### 2. Clone Repository
+```bash
+npm install
+```
 
+### 3️⃣ Configure Environment Variables
+
+Create a `.env.local` file and add:
+
+```
 NEXT_PUBLIC_FIREBASE_API_KEY=
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=
@@ -130,10 +139,19 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
 
 GEMINI_API_KEY=
+```
 
-### 3. Run Development Server
+### 4️⃣ Run Development Server
+
+```bash
 npm run dev
+```
 
+Application runs at:
+
+```
+http://localhost:3000
+```
 
 ---
 
@@ -146,15 +164,13 @@ The application is deployed on **Vercel**, ensuring fast global delivery, automa
 1. Push the latest code to the GitHub repository.
 2. Import the repository into Vercel.
 3. Configure required environment variables in the Vercel dashboard.
-4. Trigger deployment.
+4. Deploy the project.
 
-Once configured, every push to the `main` branch automatically initiates a new production deployment.
+Once configured, every push to the `main` branch automatically triggers a new production deployment.
 
 ---
 
 ## 📈 Future Enhancements
-
-The platform can be further enhanced with the following features:
 
 - Performance analytics dashboard for tracking content effectiveness
 - Multi-platform content optimization (Instagram, YouTube, LinkedIn, etc.)
@@ -163,3 +179,15 @@ The platform can be further enhanced with the following features:
 
 ---
 
+## 📄 License
+
+This project is developed for academic and portfolio purposes.
+
+---
+
+## 👩‍💻 Authors
+
+Khatija Kaneez
+Zaynah Anjum
+Jenisha Dsouza
+AI-driven solutions for modern content creators.
